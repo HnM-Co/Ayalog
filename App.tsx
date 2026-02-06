@@ -95,14 +95,14 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto px-4 pb-4 pt-1 scroll-smooth">
-        {/* Google AdSense Slot - Horizontal Banner Only */}
-        <div className="w-full my-0.5 flex justify-center items-center overflow-hidden">
+        {/* Google AdSense Slot - Compact Mobile Banner (50px fixed) */}
+        <div className="w-full my-0 flex justify-center items-center overflow-hidden bg-gray-50/30" style={{ minHeight: '50px', maxHeight: '50px' }}>
            {/* 
              주의: data-ad-slot 값은 구글 애드센스 대시보드에서 생성한 '디스플레이 광고 단위' ID로 변경해야 합니다.
              현재는 임시 ID가 들어가 있습니다.
            */}
            <ins className="adsbygoogle"
-             style={{ display: 'block', width: '100%', maxHeight: '60px' }}
+             style={{ display: 'block', width: '100%', maxHeight: '50px' }}
              data-ad-client="ca-pub-7969346905229420"
              data-ad-slot="1234567890" 
              data-ad-format="horizontal"
