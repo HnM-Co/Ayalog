@@ -7,6 +7,13 @@ import ReportView from './components/ReportView';
 
 const LOCAL_STORAGE_KEY = 'vas_pain_tracker_data';
 
+// Declare adsbygoogle on window
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabView>('tracker');
   const [records, setRecords] = useState<PainRecord[]>([]);
@@ -23,6 +30,17 @@ export default function App() {
       console.error("Failed to load records", e);
     } finally {
       setIsLoaded(true);
+    }
+  }, []);
+
+  // Initialize AdSense
+  useEffect(() => {
+    try {
+      // Push the ad unit initialization
+      // Note: This relies on the script being loaded in index.html
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.error("AdSense init error:", e);
     }
   }, []);
 
@@ -77,9 +95,18 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto px-4 pb-4 pt-1 scroll-smooth">
-        {/* Google AdSense Slot */}
-        <div className="w-full my-1 h-14 bg-gray-100/50 border border-gray-200/50 rounded-lg flex items-center justify-center text-[10px] text-gray-300">
-           구글 애드센스 광고 영역
+        {/* Google AdSense Slot - Horizontal Banner Only */}
+        <div className="w-full my-0.5 flex justify-center items-center overflow-hidden">
+           {/* 
+             주의: data-ad-slot 값은 구글 애드센스 대시보드에서 생성한 '디스플레이 광고 단위' ID로 변경해야 합니다.
+             현재는 임시 ID가 들어가 있습니다.
+           */}
+           <ins className="adsbygoogle"
+             style={{ display: 'block', width: '100%', maxHeight: '60px' }}
+             data-ad-client="ca-pub-7969346905229420"
+             data-ad-slot="1234567890" 
+             data-ad-format="horizontal"
+             data-full-width-responsive="true"></ins>
         </div>
 
         {renderContent()}
