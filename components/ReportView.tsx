@@ -48,30 +48,27 @@ const ReportView: React.FC<ReportViewProps> = ({ records }) => {
   const generateReport = () => {
     if (!stats || records.length === 0) return "기록이 없습니다.";
 
-    // Sort specifically for the text report
-    const sortedRecords = [...records].sort((a, b) => b.timestamp - a.timestamp); // Newest first for list
+    // Sort specifically for the text report (Newest first)
+    const sortedRecords = [...records].sort((a, b) => b.timestamp - a.timestamp);
     
-    // Top recent notes for context
-    const recentNotes = sortedRecords
-        .filter(r => r.note.trim().length > 0)
-        .slice(0, 5)
-        .map(r => `- (${new Date(r.timestamp).toLocaleDateString()}) 강도 ${r.score}: ${r.note}`)
-        .join('\n');
+    // Detailed list with date and time
+    const detailedList = sortedRecords.map(r => {
+        const dateObj = new Date(r.timestamp);
+        const date = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+        const time = dateObj.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        const notePart = r.note ? ` \n   └ 📝 ${r.note}` : '';
+        return `- ${date} ${time} | 통증 ${r.score}${notePart}`;
+    }).join('\n');
 
     return `[아야로그 - 통증 리포트]
 기간: ${stats.start} ~ ${stats.end}
-총 기록 횟수: ${stats.count}회
+총 기록: ${stats.count}회
 
 [통계 요약]
-- 평균 통증: ${stats.avg}점 / 10
-- 최대 통증: ${stats.max}점
-- 최소 통증: ${stats.min}점
+- 평균: ${stats.avg} / 최대: ${stats.max} / 최소: ${stats.min}
 
-[주요 메모 사항 (최근순)]
-${recentNotes || "(특이사항 없음)"}
-
-[전체 요약]
-환자는 ${stats.start}부터 ${stats.end}까지 평균 ${stats.avg}점의 통증을 호소함.
+[상세 기록]
+${detailedList}
 
 @acedoctor2026`;
   };
@@ -82,6 +79,26 @@ ${recentNotes || "(특이사항 없음)"}
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleShare = async () => {
+    const reportText = generateReport();
+    const shareData = {
+      title: '아야로그 통증 리포트',
+      text: reportText,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Share failed:', err);
+      }
+    } else {
+      // Fallback: Copy to clipboard if sharing is not supported
+      handleCopy();
+      alert('공유하기를 지원하지 않는 브라우저입니다. 클립보드에 복사되었습니다.');
+    }
   };
 
   if (records.length === 0) {
@@ -153,31 +170,41 @@ ${recentNotes || "(특이사항 없음)"}
           진료실용 요약
         </h3>
         <p className="text-gray-400 text-xs mb-5 z-10 relative">
-          의사 선생님께 이 화면을 보여주거나 내용을 복사하세요.
+          의사 선생님께 이 화면을 보여주거나 공유하세요.
         </p>
 
-        <div className="bg-gray-700/50 rounded-xl p-4 font-mono text-xs text-gray-300 mb-5 whitespace-pre-wrap leading-relaxed border border-gray-600">
+        <div className="bg-gray-700/50 rounded-xl p-4 font-mono text-xs text-gray-300 mb-5 whitespace-pre-wrap leading-relaxed border border-gray-600 max-h-80 overflow-y-auto">
           {generateReport()}
         </div>
 
-        <button 
-          onClick={handleCopy}
-          className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-            copied ? 'bg-green-500 text-white' : 'bg-white text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          {copied ? (
-            <>
-              <Check size={18} />
-              복사 완료!
-            </>
-          ) : (
-            <>
-              <Copy size={18} />
-              텍스트로 복사하기
-            </>
-          )}
-        </button>
+        <div className="flex gap-3 z-10 relative">
+          <button 
+            onClick={handleCopy}
+            className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+              copied ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {copied ? (
+              <>
+                <Check size={18} />
+                복사됨
+              </>
+            ) : (
+              <>
+                <Copy size={18} />
+                복사
+              </>
+            )}
+          </button>
+          
+          <button 
+            onClick={handleShare}
+            className="flex-[1.5] py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-white text-gray-900 hover:bg-gray-100"
+          >
+            <Share2 size={18} />
+            공유하기
+          </button>
+        </div>
       </div>
 
       <div className="text-center text-xs text-gray-400 font-mono">

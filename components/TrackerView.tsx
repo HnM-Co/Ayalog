@@ -62,7 +62,7 @@ const TrackerView: React.FC<TrackerViewProps> = ({ onSave, lastRecord }) => {
             onChange={(e) => setScore(Number(e.target.value))}
             className="w-full h-3 bg-white/40 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-white/30"
           />
-          <div className="flex justify-between text-xs font-bold mt-3 px-1 text-black/60 mix-blend-overlay">
+          <div className={`flex justify-between text-xs font-bold mt-3 px-1 ${currentLevel.textColor} opacity-80`}>
             <span>하나도 안 아픔 (1)</span>
             <span>너무 아파요 (10)</span>
           </div>
