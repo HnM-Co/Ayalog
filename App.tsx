@@ -76,7 +76,12 @@ export default function App() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-4 scroll-smooth">
+      <main className="flex-1 overflow-y-auto px-4 pb-4 pt-1 scroll-smooth">
+        {/* Google AdSense Slot */}
+        <div className="w-full my-1 h-14 bg-gray-100/50 border border-gray-200/50 rounded-lg flex items-center justify-center text-[10px] text-gray-300">
+           구글 애드센스 광고 영역
+        </div>
+
         {renderContent()}
       </main>
 
